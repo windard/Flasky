@@ -13,7 +13,7 @@ class Config:
 
     @staticmethod
     def init_app(app):
-        psss
+        pass
 
 class DevelopmentConfig(Config):
     host = '0.0.0.0'
