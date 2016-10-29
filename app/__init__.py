@@ -2,9 +2,9 @@
 
 from flask import Flask,render_template
 from flask_bootstrap import Bootstrap
-from flask.ext.mail import Mail
-from flask.ext.moment import Moment
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_mail import Mail
+from flask_moment import Moment
+from flask_sqlalchemy import SQLAlchemy
 from config import config
 from .main import main as main_blueprint
 

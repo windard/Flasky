@@ -24,14 +24,16 @@ class DevelopmentConfig(Config):
     MAIL_USE_TLS = True
     MAIL_USERNAME = '1106911190@qq.com'
     MAIL_PASSWORD = 'XXXXXX'
-    SQLALCHEMY_DATABASE_URL = 'mysql://root:password@localhost/test'
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SQLALCHEMY_DATABASE_URL = 'mysql://root:123456@localhost/flasky'
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URL = 'mysql://root:password@localhost/test'
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SQLALCHEMY_DATABASE_URL = 'mysql://root:123456@localhost/flasky'
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URL = 'mysql://root:password@localhost/flasky'
+    SQLALCHEMY_DATABASE_URL = 'mysql://root:123456@localhost/flasky'
 
 config = {
     'development':DevelopmentConfig,
