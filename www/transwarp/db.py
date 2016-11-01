@@ -18,8 +18,8 @@
               1. 为数据库连接 准备需要的配置信息
               2. 创建数据库连接(由生成的全局对象engine的 connect方法提供)
           from transwarp import db
-          db.create_engine(user='root',
-                           password='password',
+          db.create_engine(user='www-data',
+                           password='www-data',
                            database='test',
                            host='127.0.0.1',
                            port=3306)
@@ -533,7 +533,7 @@ class _TransactionCtx(object):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    create_engine('www-data', 'www-data', 'test', '192.168.10.128')
+    create_engine('www-data', 'www-data', 'test', '127.0.0.1')
     update('drop table if exists user')
     update('create table user (id int primary key, name text, email text, passwd text, last_modified real)')
     import doctest
