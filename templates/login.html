@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title%} Flasky {% endblock %}
+
+{% block page_content %}
+
+<div class="container">
+	<div class="page-head">
+		<h1>Hello {% if name %}{{ name }}{% else %} Stranger {% endif %}</h1>
+		{% if not known %}
+		<p>Nice To Meet You</p>
+		{% else %}
+		<p>pleased to meet you Again</p>
+		{% endif %}
+	</div>
+	<br>
+	<br>
+	{{ wtf.quick_form(form) }}
+</div>
+
+{% endblock %}

@@ -1,10 +1,11 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-	<meta charset="UTF-8">
-	<title>Python</title>
-</head>
-<body>
-	<h2>Hello World!</h2>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title%} Flasky {% endblock %}
+
+{% block page_content %}
+<h1>Hello World, Flasky</h1>
+
+<p>The Local Date And Time is {{ moment(current_time).format('LLL') }}</p>
+
+<p>That was {{ moment(current_time).fromNow(refresh=True) }} </p>
+{% endblock %}
