@@ -25,14 +25,14 @@ class DevelopmentConfig(Config):
     MAIL_USE_TLS = True
     MAIL_USERNAME = os.environ.get("USERNAME")
     MAIL_PASSWORD = os.environ.get("PASSWORD")
-    SQLALCHEMY_DATABASE_URL = 'mysql://www-data:www-data@localhost/flasky'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or 'mysql://www-data:www-data@localhost/flasky'
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URL = 'mysql://www-data:www-data@localhost/flasky'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or 'mysql://www-data:www-data@localhost/flasky'
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URL = 'mysql://www-data:www-data@localhost/flasky'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'mysql://www-data:www-data@localhost/flasky'
 
 config = {
     'development':DevelopmentConfig,
