@@ -1,0 +1,13 @@
+body{
+	padding-top: 51px;
+	font-family: Lato, "Heiti SC", "Hiragino Sans GB", STHeiti, "Source Han Sans CN", "WenQuanYi Zen Hei", "WenQuanYi Micro Hei", MicroSoft YaHei, sans-serif;
+}
+html::-webkit-scrollbar{
+    width:8px;
+    background-color:#ddd;
+    transition: all ease-in-out 0.5s;
+}
+html::-webkit-scrollbar-thumb{
+    background-color:#aaa;
+    border-radius:3px;
+}

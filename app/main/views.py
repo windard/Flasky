@@ -13,7 +13,7 @@ def index():
     form = NameForm()
     if form.validate_on_submit():
         redirect(url_for('.index'))
-    return render_template('index.html',form=form,
+    return render_template('login.html',form=form,
                                         name=session.get('name'),
                                         known=session.get('known',False),
                                         current_time=datetime.utcnow())
