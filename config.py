@@ -7,9 +7,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(40)
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
     FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
-    FLASKY_MAIL_SENDER = 'Flasky Admin <admin@windard.com>'
-    FLASKY_ADMIN = os.environ.get('USERNAME')
+    FLASKY_MAIL_SENDER = '1106911190@qq.com'
+    FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
 
     @staticmethod
     def init_app(app):
@@ -20,20 +21,18 @@ class DevelopmentConfig(Config):
     port = 8899
     DEBUG = True
     MAIL_SERVER = 'smtp.qq.com'
-    MAIL_PORT = 597
+    MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_USERNAME = '1106911190@qq.com'
-    MAIL_PASSWORD = 'XXXXXX'
-    SQLALCHEMY_TRACK_MODIFICATIONS = True
-    SQLALCHEMY_DATABASE_URL = 'mysql://root:123456@localhost/flasky'
+    MAIL_USERNAME = os.environ.get("USERNAME")
+    MAIL_PASSWORD = os.environ.get("PASSWORD")
+    SQLALCHEMY_DATABASE_URL = 'mysql://www-data:www-data@localhost/flasky'
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_TRACK_MODIFICATIONS = True
-    SQLALCHEMY_DATABASE_URL = 'mysql://root:123456@localhost/flasky'
+    SQLALCHEMY_DATABASE_URL = 'mysql://www-data:www-data@localhost/flasky'
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URL = 'mysql://root:123456@localhost/flasky'
+    SQLALCHEMY_DATABASE_URL = 'mysql://www-data:www-data@localhost/flasky'
 
 config = {
     'development':DevelopmentConfig,
