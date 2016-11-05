@@ -3,15 +3,19 @@
 {% block title%} Flasky {% endblock %}
 
 {% block page_content %}
-<h1>Hello World, Flasky</h1>
+
+<div class="container-fluid">
+	<div class="page-header">
+		你好。{% if current_user.is_authenticated %}
+		{{ current_user.username }}
+		{% else %}
+		Stranger!
+		{% endif %}		
+	</div>
+</div>
 
 <p>The Local Date And Time is {{ moment(current_time).format('LLL') }}</p>
 
 <p>That was {{ moment(current_time).fromNow(refresh=True) }} </p>
 
-你好。{% if current_user.is_authenticated %}
-{{ current_user.username }}
-{% else %}
-Stranger!
-{% endif %}
 {% endblock %}

@@ -7,7 +7,10 @@ from . import mail
 
 def send_async_email(app, msg):
     with app.app_context():
-        mail.send(msg)
+        try:
+            mail.send(msg)
+        except Exception,e:
+            print "Send Error ",e
 
 def send_email(to, subject, template, **kwargs):
     app = current_app._get_current_object()

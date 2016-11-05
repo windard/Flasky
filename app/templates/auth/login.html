@@ -8,12 +8,16 @@
     <h1>Login</h1>
 </div>
 <div class="container">
+	<!-- <h3 class="text-info">注册登录</h3> -->
 	<div class="col-md-4">
 		{{ wtf.quick_form(form) }}
 	</div>
 </div>
+<div class="container">
 <p>
+	<p>Forgot your password? <a href="{{ url_for('auth.password_reset_request') }}">Click here to reset it</a>.</p>
 	New User?
 	<a href="{{ url_for('auth.register') }}">Click here to register</a>
 </p>
+</div>
 {% endblock %}
