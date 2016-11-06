@@ -10,3 +10,21 @@ pip install -r requirements.txt -i http://pypi.douban.com/simple --trusted-host 
 python manage.py db init
 python manage.py db upgrade
 ```
+
+```
+python manage.py shell
+
+db.drop_all()
+db.create_all()
+Role.insert_roles()
+
+```
+
+```
+// 产生 count 个随机用户
+User.generate_fake(count=100)
+// 产生 count 篇随机文章
+Post.generate_fake(count=100)
+// 让已有的每一位用户关注自己
+User.add_self_follows()
+```

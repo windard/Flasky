@@ -3,8 +3,11 @@
 from . import db
 from . import login_manager
 
+import bleach
+import hashlib
 from datetime import datetime
-from flask import current_app
+from flask import current_app, request
+from markdown import markdown
 from flask_login import UserMixin, AnonymousUserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -49,6 +52,47 @@ class Role(db.Model):
     def __repr__(self):
         return '<Role %r>' % self.name
 
+class Post(db.Model):
+    """docstring for Post"""
+    __tablename__ = 'posts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    comments = db.relationship('Comment', backref='post', lazy='dynamic')
+
+    @staticmethod
+    def generate_fake(count=100):
+        from random import seed, randint
+        import forgery_py
+
+        seed()
+
+        user_count = User.query.count()
+
+        for i in xrange(count):
+            u = User.query.offset(randint(0,user_count-1,)).first()
+            p = Post(body=forgery_py.lorem_ipsum.sentences(randint(1,3)),timestamp=forgery_py.date.date(True),author=u)
+            db.session.add(p)
+            db.session.commit()
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote',
+                        'code', 'em', 'i', 'li', 'ol', 'pre', 'strong'
+                        'ul', 'h1', 'h2', 'h3', 'p', 'img']
+        target.body_html = bleach.linkify(bleach.clean(markdown(value,output_format='html'),tags=allowed_tags,strip=True))
+
+class Follow(db.Model):
+    """docstring for Follow"""
+    __tablename__ = 'follows'
+
+    follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+        
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     
@@ -59,17 +103,30 @@ class User(UserMixin, db.Model):
     confirmed = db.Column(db.Boolean,default=False)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     name = db.Column(db.Unicode(128))
-    location = db.Column(db.Text())
+    location = db.Column(db.Unicode(128))
+    about_me = db.Column(db.Text())
     member_since = db.Column(db.DateTime(),default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(),default=datetime.utcnow)
+    avatar_hash = db.Column(db.String(64))
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
+    followed = db.relationship('Follow', foreign_keys=[Follow.follower_id], 
+                                backref=db.backref('follower', lazy='joined'), 
+                                lazy='dynamic', cascade='all, delete-orphan')
+    followers = db.relationship('Follow', foreign_keys=[Follow.followed_id], 
+                                backref=db.backref('followed', lazy='joined'), 
+                                lazy='dynamic', cascade='all, delete-orphan')
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
             if self.email == current_app.config['FLASKY_ADMIN']:
                 self.role = Role.query.filter_by(permission=0xff).first()
             else:
                 self.role = Role.query.filter_by(default=True).first()
+        self.follow(self)
+        if self.email is not None and self.avatar_hash is None:
+            self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
 
     @property
     def password(self):
@@ -82,6 +139,18 @@ class User(UserMixin, db.Model):
     def verify_password(self,password):
     	return check_password_hash(self.password_hash, password)
 
+    @property
+    def followed_posts(self):
+        return Post.query.join(Follow, Follow.followed_id == Post.author_id).filter(Follow.follower_id == self.id)
+
+    @staticmethod
+    def add_self_follows():
+        for user in User.query.all():
+            if not user.is_following(user):
+                user.follow(user)
+                db.session.add(user)
+                db.session.commit()
+                
     def generate_confirmation_token(self,expiration=3600):
     	s = Serializer(current_app.config['SECRET_KEY'],expiration)
     	return s.dumps({'confirm':self.id})
@@ -132,6 +201,7 @@ class User(UserMixin, db.Model):
         if self.query.filter_by(email=new_email).first() is not None:
             return False
         self.email = new_email
+        self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
         db.session.add(self)
         return True
         
@@ -145,6 +215,53 @@ class User(UserMixin, db.Model):
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
 
+    def gravatar(self, size=400, default='identicon', rating='g'):
+        if request.is_secure:
+            url = "https://secure.gravatar.com/avatar"
+        else:
+            url = "http://www.gravatar.com/avatar"
+        hash = self.avatar_hash or hashlib.md5(self.email.encode('utf-8')).hexdigest()
+        return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(url=url, hash=hash, size=size, default=default, rating=rating)
+
+    def is_following(self, user):
+        return self.followed.filter_by(followed_id=user.id).first() is not None
+
+    def follow(self, user):
+        if not self.is_following(user):
+            f = Follow(follower=self, followed=user)
+            db.session.add(f)
+
+    def unfollow(self, user):
+            f = self.followed.filter_by(followed_id=user.id).first()
+            if f:
+                db.session.delete(f)    
+
+    def is_followed_by(self, user):
+        return self.followers.filter_by(follower_id=user.id).first() is not None
+        
+    @staticmethod
+    def generate_fake(count=100):
+        from sqlalchemy.exc import IntegrityError
+        from random import seed
+        import forgery_py
+
+        seed()
+
+        for i in xrange(count):
+            try:
+                u = User(email=forgery_py.internet.email_address(),
+                        username=forgery_py.internet.user_name(True),
+                        password=forgery_py.lorem_ipsum.word(),
+                        confirmed=True,
+                        name=forgery_py.name.full_name(),
+                        location=forgery_py.address.city(),
+                        about_me=forgery_py.lorem_ipsum.sentence(),
+                        member_since=forgery_py.date.date(True))
+                db.session.add(u)
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+
     def __repr__(self):
         return '<User %r>' % self.username
 
@@ -155,6 +272,25 @@ class AnonymousUser(AnonymousUserMixin):
 
     def is_administrator(self):
         return False
+
+class Comment(db.Model):
+    """docstring for Comment"""
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    disabled = db.Column(db.Boolean)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i', 'strong', 'img']
+        target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))        
+
+db.event.listen(Post.body, 'set', Post.on_changed_body)
+db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 
 login_manager.anonymous_user = AnonymousUser
         
