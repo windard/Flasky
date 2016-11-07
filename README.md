@@ -28,3 +28,25 @@ Post.generate_fake(count=100)
 // 让已有的每一位用户关注自己
 User.add_self_follows()
 ```
+
+Windows 
+
+```
+set MAIL_USERNAME=XXX
+set MAIL_PASSWORD=XXX
+set FLASKY_ADMIN=XXX
+set DEV_DATABASE_URL=XXX
+```
+
+Linux
+
+```
+export MAIL_USERNAME=XXX
+export MAIL_PASSWORD=XXX
+export FLASKY_ADMIN=XXX
+export DEV_DATABASE_URL=XXX
+```
+
+Mark 一下
+- 下次的站将所有的 db.String() 换成 db.Unicode() , 将所有的 db.Text() 换成	db.UnicodeText
+- 下次的站用 flask-avatar 替代 Gravtar
