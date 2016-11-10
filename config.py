@@ -18,7 +18,7 @@ class Config:
     # FLASKY_MAIL_SENDER = 'windard@outlook.com'
     FLASKY_MAIL_SENDER = '1106911190@qq.com'
     FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
-    FLASKY_POST_PER_PAGE = 20
+    FLASKY_POSTS_PER_PAGE = 20
     FLASKY_FOLLOWERS_PER_PAGES = 30
     FLASKY_COMMENTS_PER_PAGE = 50
 

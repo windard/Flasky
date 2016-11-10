@@ -12,7 +12,13 @@ migrate = Migrate(app,db)
 
 with app.app_context():
     db.create_all()
-    
+
+@app.template_filter('strip')
+def strip_filter(s):
+    return s.replace("\n","")
+
+app.jinja_env.filters['strip'] = strip_filter
+
 def make_shell_context():
     return dict(app=app, db=db, User=User, Role=Role, Permission=Permission, Post=Post, Comment=Comment)
 

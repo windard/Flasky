@@ -48,5 +48,10 @@ export DEV_DATABASE_URL=XXX
 ```
 
 Mark 一下
-- 下次的站将所有的 db.String() 换成 db.Unicode() , 将所有的 db.Text() 换成	db.UnicodeText
-- 下次的站用 flask-avatar 替代 Gravtar
+- 下次的站将所有的 `db.String()` 换成 `db.Unicode()` , 将所有的 `db.Text()` 换成 `db.UnicodeText`
+- 下次的站用 `flask-avatar` 替代 `Gravtar`
+- 在使用 `bleach` 的 `clean` 的时候，也要注意那个标签的顺序，这样才能够在解析的时候不会发生在解析 `li` 的时候把 `ul` 给解析没有的了问题。
+- `Flask-Captcha` 可以使用 验证码，可惜只支持 Python 3.3+ ，使用 `wheezy.captcha` 替代
+- HTTP 的基本认证方式是 `Authorization` 的 header ，参数是 `Basic base64(email:password)` 或者是 `token`
+- HTTP 传送 json 格式的数据，需要发送请求头 `Content-Type: application/json`，然后数据段使用 json 格式书写
+- 

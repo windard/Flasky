@@ -5,10 +5,11 @@ from . import login_manager
 
 import bleach
 import hashlib
-from datetime import datetime
-from flask import current_app, request
 from markdown import markdown
+from datetime import datetime
+from flask import current_app, request, url_for
 from flask_login import UserMixin, AnonymousUserMixin
+from app.exceptions import ValidationError
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
@@ -63,6 +64,25 @@ class Post(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
+    def to_json(self):
+        json_post = {
+            'url':url_for('api.get_post', id=self.id, _external=True),
+            'body':self.body,
+            'body_html':self.body_html,
+            'timestamp':self.timestamp,
+            'author':url_for('api.get_user', id=self.author_id, _external=True),
+            'comments':url_for('api.get_post_comments', id=self.id, _external=True),
+            'comment_count':self.comments.count()
+        }
+        return json_post
+
+    @staticmethod
+    def from_json(json_post):
+        body = json_post.get('body')
+        if body is None or body == "":
+            raise ValidationError('post does not have a body')
+        return Post(body=body)
+
     @staticmethod
     def generate_fake(count=100):
         from random import seed, randint
@@ -80,10 +100,11 @@ class Post(db.Model):
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote',
-                        'code', 'em', 'i', 'li', 'ol', 'pre', 'strong'
-                        'ul', 'h1', 'h2', 'h3', 'p', 'img']
-        target.body_html = bleach.linkify(bleach.clean(markdown(value,output_format='html'),tags=allowed_tags,strip=True))
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'hr',
+                        'pre', 'code', 'em', 'i', 'ul', 'ol', 'li', 'strong',
+                        'h1', 'h2', 'h3', 'p', 'img']
+        attributes={u'a': [u'href', u'title'], u'abbr': [u'title'], u'acronym': [u'title'], u'img': [u'alt', u'src']}
+        target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, attributes=attributes, strip=True))
 
 class Follow(db.Model):
     """docstring for Follow"""
@@ -205,6 +226,31 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
         
+    def generate_auth_token(self, expiration):
+        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
+        return s.dumps({"id":self.id})
+
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return False
+        return User.query.get(data['id'])
+
+    def to_json(self):
+        json_user = {
+            'url':url_for('api.get_user', id=self.id, _external=True),
+            'username':self.username,
+            'member_since':self.member_since,
+            'last_seen':self.last_seen,
+            'posts':url_for('api.get_user_posts', id=self.id, _external=True),
+            'followed_posts':url_for('api.get_user_followed_posts', id=self.id, _external=True),
+            'post_count':self.posts.count()
+        }
+        return json_user
+
     def ping(self):
         self.last_seen = datetime.utcnow()
         db.session.add(self)
@@ -284,10 +330,32 @@ class Comment(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
 
+    def to_json(self):
+        json_comment = {
+            'url':url_for('api.get_comment', id=self.id, _external=True),
+            'post':url_for('api.get_post', id=self.post_id, _external=True),
+            'body':self.body,
+            'body_html':self.body_html,
+            'timestamp':self.timestamp,
+            'author':url_for('api.get_user', id=self.author_id, _external=True),
+        }
+        return json_comment
+
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i', 'strong', 'img']
-        target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))        
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'hr'
+                        'code', 'em', 'i', 'ul', 'ol', 'li', 'strong'
+                        'pre', 'h1', 'h2', 'h3', 'p', 'img']
+        # allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i', 'strong', 'img']
+        attributes={u'a': [u'href', u'title'], u'abbr': [u'title'], u'acronym': [u'title'], u'img': [u'alt', u'src']}
+        target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, attributes=attributes, strip=True))        
+
+    @staticmethod
+    def from_json(json_comment):
+        body = json_comment.get('body')
+        if body is None or body == "":
+            raise ValidationError("Comment does not have a body")
+        return Comment(body=body)
 
 db.event.listen(Post.body, 'set', Post.on_changed_body)
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
