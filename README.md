@@ -54,4 +54,3 @@ Mark 一下
 - `Flask-Captcha` 可以使用 验证码，可惜只支持 Python 3.3+ ，使用 `wheezy.captcha` 替代
 - HTTP 的基本认证方式是 `Authorization` 的 header ，参数是 `Basic base64(email:password)` 或者是 `token`
 - HTTP 传送 json 格式的数据，需要发送请求头 `Content-Type: application/json`，然后数据段使用 json 格式书写
-- 

@@ -17,8 +17,7 @@ def before_request():
             
 @auth.route('/')
 def index():
-    # return render_template('auth/index.html')
-    return redirect('auth.login')
+    return redirect(url_for('auth.login'))
 
 @auth.route('/login',methods=['GET','POST'])
 def login():
@@ -158,6 +157,5 @@ def change_email(token):
     if current_user.change_email(token):
         flash('Your email address has been updated.','success')
     else:
-        # flash('Invalid request.')
         flash('Oops , The reset link is invalid or has expired','danger')
     return redirect(url_for('main.index'))

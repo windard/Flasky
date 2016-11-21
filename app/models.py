@@ -14,8 +14,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 class Permission(object):
-    FOLLOW = 0x01;
-    COMMENT = 0x02;
+    FOLLOW = 0x01
+    COMMENT = 0x02
     WRITE_ARTICLES = 0x04
     MODERATE_COMMENTS = 0x08
     ADMINISTER = 0x80
