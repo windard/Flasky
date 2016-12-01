@@ -25,3 +25,4 @@ Flask-HTTPAuth>=3.2.1
 ForgeryPy>=0.1
 httpie>=0.9.6
 coverage>=4.2
+selenium>=3.0.2

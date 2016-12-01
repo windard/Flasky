@@ -30,15 +30,25 @@ def get_post(id):
 	post = Post.query.get_or_404(id)
 	return jsonify(post.to_json())
 
+# @api.route('/posts/', methods=['POST'])
+# @permission_required(Permission.WRITE_ARTICLES)
+# def new_post():
+# 	post = Post.from_json(request.json)
+# 	post.author = g.current_user
+# 	db.session.add(post)
+# 	db.session.commit()
+# 	return jsonify(post.to_json()), 201, {'Location':url_for('api.get_post', id=post.id, _external=True)}
+
 @api.route('/posts/', methods=['POST'])
 @permission_required(Permission.WRITE_ARTICLES)
 def new_post():
-	print request.json
-	post = Post.from_json(request.json)
-	post.author = g.current_user
-	db.session.add(post)
-	db.session.commit()
-	return jsonify(post.to_json(), 201, {'Location':url_for('api.get_post', id=post.id, _external=True)})
+    post = Post.from_json(request.json)
+    post.author = g.current_user
+    db.session.add(post)
+    db.session.commit()
+    return jsonify(post.to_json()), 201, \
+        {'Location': url_for('api.get_post', id=post.id, _external=True)}
+
 
 @api.route('/posts/<int:id>', methods=['PUT'])
 @permission_required(Permission.WRITE_ARTICLES)

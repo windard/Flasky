@@ -139,6 +139,22 @@ class UserModelTestCase(unittest.TestCase):
         u.ping()
         self.assertTrue(u.last_seen > last_seen_before)
 
+    def test_gravatar(self):
+        u = User(email='john@example.com', password='cat')
+        with self.app.test_request_context('/'):
+            gravatar = u.gravatar()
+            gravatar_256 = u.gravatar(size=256)
+            gravatar_pg = u.gravatar(rating='pg')
+            gravatar_retro = u.gravatar(default='retro')
+        with self.app.test_request_context('/', base_url='https://example.com'):
+            gravatar_ssl = u.gravatar()
+        self.assertTrue('http://www.gravatar.com/avatar/' +
+                        'd4c74594d841139328695756648b6bd6'in gravatar)
+        self.assertTrue('s=256' in gravatar_256)
+        self.assertTrue('r=pg' in gravatar_pg)
+        self.assertTrue('d=retro' in gravatar_retro)
+        self.assertTrue('https://secure.gravatar.com/avatar/' + 'd4c74594d841139328695756648b6bd6' in gravatar_ssl)
+
     def test_follows(self):
         u1 = User(email='john@example.com', password='cat')
         u2 = User(email='susan@example.org', password='dog')
@@ -162,14 +178,14 @@ class UserModelTestCase(unittest.TestCase):
         f = u1.followed.all()[-1]
         self.assertTrue(f.followed == u2)
         self.assertTrue(timestamp_before <= f.timestamp <= timestamp_after)
-        f = u2.followers.all()[-1]
+        f = u2.followers.all()[0]
         self.assertTrue(f.follower == u1)
         u1.unfollow(u2)
         db.session.add(u1)
         db.session.commit()
         self.assertTrue(u1.followed.count() == 1)
         self.assertTrue(u2.followers.count() == 1)
-        self.assertTrue(Follow.query.count() == 1)
+        self.assertTrue(Follow.query.count() == 2)
         u2.follow(u1)
         db.session.add(u1)
         db.session.add(u2)
@@ -186,3 +202,5 @@ class UserModelTestCase(unittest.TestCase):
         excepted_keys = ['url', 'username', 'member_since', 'last_seen', 'posts', 'followed_posts', 'post_count']
         self.assertEqual(sorted(json_user.keys()), sorted(excepted_keys))
         self.assertTrue('api/users/' in json_user['url'])
+
+

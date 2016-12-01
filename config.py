@@ -8,6 +8,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(40)
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SQLALCHEMY_RECORD_QUERIES = True
     # MAIL_SERVER = 'smtp-mail.outlook.com'
     MAIL_SERVER = 'smtp.qq.com'
     MAIL_PORT = 587
@@ -21,6 +22,7 @@ class Config:
     FLASKY_POSTS_PER_PAGE = 20
     FLASKY_FOLLOWERS_PER_PAGES = 30
     FLASKY_COMMENTS_PER_PAGE = 50
+    FLASKY_SLOW_DB_QUERY_TIME=0.5
 
     @staticmethod
     def init_app(app):
@@ -34,6 +36,7 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
+    WTF_CSRF_ENABLED = False
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or 'mysql://www-data:www-data@localhost/flasky'
 
 class ProductionConfig(Config):

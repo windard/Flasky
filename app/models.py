@@ -236,7 +236,7 @@ class User(UserMixin, db.Model):
         try:
             data = s.loads(token)
         except:
-            return False
+            return None
         return User.query.get(data['id'])
 
     def to_json(self):
@@ -343,8 +343,8 @@ class Comment(db.Model):
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'hr'
-                        'code', 'em', 'i', 'ul', 'ol', 'li', 'strong'
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'hr',
+                        'code', 'em', 'i', 'ul', 'ol', 'li', 'strong',
                         'pre', 'h1', 'h2', 'h3', 'p', 'img']
         # allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i', 'strong', 'img']
         attributes={u'a': [u'href', u'title'], u'abbr': [u'title'], u'acronym': [u'title'], u'img': [u'alt', u'src']}

@@ -1,0 +1,24 @@
+1480564014141	geckodriver	INFO	Listening on 127.0.0.1:6546
+1480564016124	mozprofile::profile	INFO	Using profile path C:\Users\dell\AppData\Local\Temp\rust_mozprofile.hoVCZoedRn5U
+1480564016139	geckodriver::marionette	INFO	Starting browser D:\Program Files (x86)\Mozilla Firefox\firefox.exe
+1480564016171	geckodriver::marionette	INFO	Connecting to Marionette on localhost:6552
+1480564017799	Marionette	INFO	Listening on port 6552
+JavaScript error: resource://gre/components/SanityTest.js, line 65: NS_ERROR_FILE_ACCESS_DENIED: Component returned failure code: 0x80520015 (NS_ERROR_FILE_ACCESS_DENIED) [nsIPrefService.savePrefFile]
+1480564020283	Marionette	INFO	startBrowser ec4c5f2a-f98b-4785-912c-3cde8f29cdbc
+1480564020302	Marionette	INFO	sendAsync ec4c5f2a-f98b-4785-912c-3cde8f29cdbc
+1480564025537	Marionette	INFO	sendAsync ec4c5f2a-f98b-4785-912c-3cde8f29cdbc
+JavaScript error: http://localhost:5000/, line 429: ReferenceError: moment is not defined
+1480564048137	Marionette	INFO	sendAsync ec4c5f2a-f98b-4785-912c-3cde8f29cdbc
+1480564048150	Marionette	INFO	sendAsync ec4c5f2a-f98b-4785-912c-3cde8f29cdbc
+1480564048163	Marionette	INFO	sendAsync ec4c5f2a-f98b-4785-912c-3cde8f29cdbc
+1480564048235	Marionette	INFO	sendAsync ec4c5f2a-f98b-4785-912c-3cde8f29cdbc
+JavaScript warning: http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment-with-locales.min.js, line 1: unreachable code after return statement
+1480564435980	addons.productaddons	WARN	Failed downloading via XHR, status: 0, reason: error
+63603840	addons.productaddons	WARN	Failed downloading via XHR, status: 0, reason: error
+[Child 24828] WARNING: pipe error: 109: file c:/builds/moz2_slave/m-rel-w32-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 343
+[Child 24828] WARNING: pipe error: 109: file c:/builds/moz2_slave/m-rel-w32-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 343
+ae57c2b7-a1e4-470f-98c6-264e907545af
+JavaScript warning: http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment-with-locales.min.js, line 1: unreachable code after return statement
+JavaScript warning: http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment-with-locales.min.js, line 1: unreachable code after return statement
+1480563261546	addons.productaddons	WARN	Failed downloading via XHR, status: 0, reason: error
+r
