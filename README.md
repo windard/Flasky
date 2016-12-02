@@ -68,7 +68,8 @@ Mark 一下
 - 下次的站用 `flask-avatar` 替代 `Gravtar`
 - 在使用 `bleach` 的 `clean` 的时候，也要注意那个标签的顺序，这样才能够在解析的时候不会发生在解析 `li` 的时候把 `ul` 给解析没有的了问题。
 - `Flask-Captcha` 可以使用 验证码，可惜只支持 Python 3.3+ ，使用 `wheezy.captcha` 替代
-- 使用 `Flask-WhooshAlchemy` 来进行全文搜索
+- 使用 `Flask-WhooshAlchemy` 来进行全文搜索。
+- `flask_migrate` 只能用来保留迁移创建数据结构，并不能保留数据库内容，这就不太好了，只是一个 `db.create_all()` 的功能。
 - HTTP 的基本认证方式是 `Authorization` 的 header ，参数是 `Basic base64(email:password)` 或者是 `token`
 - HTTP 传送 json 格式的数据，需要发送请求头 `Content-Type: application/json`，然后数据段使用 json 格式书写
 - 在 flask 下使用 SQLAlchemy 实现数据库关系继承，使用抽象的父类，即不在数据库中创建，然后分发出来两个子类，在数据库中创建表并使用，好像叫做混合继承（Concrete Table Inheritance）,这两个子类有部分相同的数据域也有部分不同的数据域，同时有相同的第三个表的外键。
