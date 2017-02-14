@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_pagedown import PageDown
 from flask_avatar import Avatar
+from flask_wtf.csrf import CsrfProtect
 from config import config
 
 bootstrap = Bootstrap()
@@ -24,6 +25,7 @@ avatar = Avatar()
 def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
+    # app.secret_key = 'very secret'
     config[config_name].init_app(app)
 
     bootstrap.init_app(app)
@@ -33,6 +35,7 @@ def create_app(config_name):
     login_manager.init_app(app)
     pagedown.init_app(app)
     avatar.init_app(app)
+    CsrfProtect(app)
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)

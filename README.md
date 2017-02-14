@@ -32,6 +32,12 @@ Role.insert_roles()
 
 ```
 
+启动 
+
+```
+python manage.py runserver
+```
+
 ```
 nohup python manage.py runserver --host=0.0.0.0 --port=80 >flasky.log &
 ```
