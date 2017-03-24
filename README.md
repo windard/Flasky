@@ -79,3 +79,4 @@ Mark 一下
 - HTTP 的基本认证方式是 `Authorization` 的 header ，参数是 `Basic base64(email:password)` 或者是 `token`
 - HTTP 传送 json 格式的数据，需要发送请求头 `Content-Type: application/json`，然后数据段使用 json 格式书写
 - 在 flask 下使用 SQLAlchemy 实现数据库关系继承，使用抽象的父类，即不在数据库中创建，然后分发出来两个子类，在数据库中创建表并使用，好像叫做混合继承（Concrete Table Inheritance）,这两个子类有部分相同的数据域也有部分不同的数据域，同时有相同的第三个表的外键。
+- 类中的 `setup` 和 `tearDown` 方法是在每一条测试用例的前后执行，类函数 `setUpClass` 和 `tearDownClass` 是在整个类的测试用例的前后执行。

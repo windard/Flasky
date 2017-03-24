@@ -27,3 +27,5 @@ ForgeryPy>=0.1
 httpie>=0.9.6
 coverage>=4.2
 selenium>=3.0.2
+pytest>=3.0.7
+mock>=2.0.0
